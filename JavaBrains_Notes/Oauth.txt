@@ -1,0 +1,94 @@
+Valet Parking example ->
+
+Rich people do not park the car themselves .They use valet parking..The Valet guy asks for the key so that he can park the car.
+But Rich people use expensive things .They dont want to provide full accessof car to Valet guy.
+So they use two keys ..one key with full access .other one for limited access.
+And they give that limited access key to Valet guy.
+
+
+Oauth ->Service authroized with another service.
+Photo printig website wants to access photos of user which are on -> Google Drive 
+each service trusts User but not each other.
+With Oauth 
+Google service will go to user and say photo service wants access to your files Can I allow?
+These are list of permission wanted by it.
+User will say allow access to it.Then Google will provide Authorization Token to photo printing service.
+Every time when the Photo printing service wants to access files on drive then it will give the token in request to Google service.
+Google will verify the token and allow access.(which is kind of limited access).
+
+
+Key terminolgies:
+Term 1> Resource : Photos on Google Drive in our example.
+Term 2>	Resource Owner : User : An entity capable of granting access to protected resource.
+Term 3> Resource Server : Google Drive : The server hosting resource 
+Term 4> Client : Photo Printing service : An application making resource requests on behalf of 
+the resource owner and with its authroization.
+
+Who has the burden if security? Resource Holder i.e Google Drive
+So googe server has Authorization server which takes care of Authorization.
+Term 5>Authorization server : The server issuing access tokens to the client.
+
+Oauth FLow 1>
+Authorization Code Flow :
+Step 1.User logged on Photo Printing service and asks to print the photos which are on GDrive.
+Step 2.Client requests resource from Authorization Server.
+Step 3 Authorization Server asks Resource Owner(User) whether to provide access and permissions to provide to Client
+step 4 Resource Owner provides confirmation.
+step 5.Authorization Server provides Authorization token to Client
+step 6.Client send this  Authorization token to Authorization server.
+step 7.Authorization server provides access token to client.Use this token to contact resource server
+step 8.Client calls the Resource Owner i.e GDrive with access token & requests the resource.
+step 9.Resource Owner verfies the access token by itself or with Authorization server & then provides the resource i.e 
+photos to client i.e photo printing service.
+
+This flow involves authorization token and access token
+
+Oauth FLow 2 > Implicit Flow
+All steps remains same except steps 5 & 6.
+Instead of sending Authorization Token to CLient and again client sending back to Authorization server to get access Token.
+this flow provides directly access token Client in step 5 only.
+
+This flow is used with JavaScript apps.Primarily used with short-lived access tokens.
+
+In the first flow access token is handed over to Client is much secure way than second flow.
+
+Flow 3 > Client Credentials Flow : Authorization between microservices 
+MS1 wants to call an API of MS2
+Step 1. MS1 makes a call to Auth Server .
+step 2. Auth server sends access token to MS1 as it knows who is MS1.
+step 3. MS1 sends request to MS2 with access token .
+step 4. MS2 provides the info to MS1. only the limited info to which MS1 has access to
+
+So in this manner multiple microservices can talk to each other and shares limited information.
+-----------------------------------------------------------------------------------------------------------------------------
+Oauth based Authentication (Facebook):
+Photo Printing service has its own Authentication mechanism to validate the user. and then it will go to the flow of Authorization
+Where User already has a google account.and then user allows permission to access the photos.So here Oauth is used for Authorization.
+But there might be the case where Oauth is used for Authentication:
+
+Instaed of having different Authentication mechanism for Photo printing service, Photo Printing service can use the same google's credentials 
+to authenticate the user for photo printing service.If google trusts the user then why should not I trust him?
+So here Oauth is used for AUthentcation.
+There might be the case that Google/Facebook API are only used at initial stage for Authentication.Once the session has established ,
+then there may be no need to connect to google till the sesssion is going on.
+
+In the example implemented in the video , we have added spring-security-oauth2-autoconfigurein pom.xml and @EnableOAuth2Sso in app class.
+So instead of showing the login form , our spring boot app will connect to facebook app (Client secret key and config is done in application.yml)
+and we will receive a dialog box to get our consent.Once we click on continue then we are authenicate..and index.html will be shown.
+
+https://cloud.google.com/identity-platform/docs/web/github
+https://github.com/settings/developers
+http://localhost:8888/login
+security:
+  oauth2:
+    client:
+      clientId:255ce018b5862de6e066 
+      clientSecret:2b4debd10bc6fb45c20f7f8f710bab1908d0b047
+      access-token-uri:https://github.com/login/oauth/access_token
+      user-authorization-uri:https://github.com/login/oauth/authorize
+      client-authentication-scheme:form
+      token-name:oauth_token
+      authentication-scheme:query
+      
+    resource:
+      userInfoUri: https://api.github.com/user

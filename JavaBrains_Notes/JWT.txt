@@ -1,0 +1,90 @@
+JWT (JSON Web Tokens)
+HTTP stateless protocol which means as below
+If user wants to access page p1 from server then he will send all required information and then p1 is dispayed
+If user now wants to access p2 then user will again send all information.Nothing is remembered from previous request.
+But your experience will be different when u login to banking website. for every reequest you dont need to send all information.
+As long as you are logged in in session you can access all kind of services.
+This is acheived by using
+1.Session Tokens
+2.JWT
+
+Lets say your system has some issue and u raised the issue with SUpport Team.Support Team representative will check it.
+if he is unable to solve the issue he handovers it to some other team.and he gives you a ticket no to keep track of it.
+So whe next day you make an enquiry about it ..The Support team will ask the ticket no..then they will look up for it in DB
+and then give info about the progress related to the issue.
+
+One scenario is client sends a request to server to access page or any information .Server sends  a session id back to client.
+For subsequent requests client sends that same session id in request to server.Server maintains the session id and user data at 
+it's memory.so when next time request comes it can be served from that point
+this session id is stored in cookie at client browser.
+this session id + cookies mechanism is most popular for Authorization.
+
+Problems are :
+1.This approach assumes that server is monolithic server but 
+now we have multiple servers handling the use requests .and there is a  load balancer to distribute the requests to corresponding servers.
+
+So lets say you have made a login request and it went to server1 and then next request to view any pages went to server2.
+but it has not stored user creds .so there is a problem.
+We can have Redis cache which is shared among all the servers but if it gets down then it can cause a problem.all sessions are down.
+
+lets say in te earlier example of CUstomer Representative.Support team does not have mobile no and there is no db.
+Entire work is manual.So user comes and shares the details of the problem he is facing.
+We dont want same story to be repeated when use is coming the next day.
+So the description of the user's problem is written on paper and handed over to user by Support team rep.
+the next day when user comes he shares this paper to new support team member.
+
+But here is the catch.There can be malicious user who writes down whole history and comes with piece of paper and gives it to Support Team Rep.
+
+So we want some trusted mechanism.
+So when the support team rep has given the paper to user he signed it.then next day when user comes support team vrifies the digital signature.
+------------------
+
+in case of JWT :
+USer makes a reequest to server.Intead of saving the the ssession id and user information at server end.
+Server sends it back to user in JSON format.
+So when next time user makes a request this entire JSON is sent to server. and Server authenticates it and then proceed.
+So signing the token by server is also important as security is concerned.
+So when user sends the Token in subsequent  request then Server verifies the signature and then allow it to for further flow
+
+--------------------------
+Session tokens are reference tokens 
+JWT are value token
+
+Structure of JWT Token :
+1.Payload
+2.Header
+3.signature
+
+go to website jwt.io and check the structre 
+				
+Client																					Server
+
+							-------->1.sends user  & password to server 			2.Authentication
+																					3.Creates JWT
+							4.JWT sent to client<---------------
+					 
+5.Saved JWT at CLient
+in Local Storage or cookie
+
+							6.JWT in Http Header------------>
+							Authorization : Bearer JWT   							7.Examines Header & payload .Calculate 
+																						Signature and validate with its own
+																						signature.If it matches then go ahead 
+																						if not then error
+---------------------------------------------------------------------------------------------------------------------------
+if someone steals JWT then  technically it will work.
+So transmit JWT with OAUTH i.e some security mechanism.
+
+How do you disable JWT? expiration is possible but log off is not possible as we do in session based tokens.
+we can have blacklisted JWT's at server.it's a workaround ..
+
+Ho to implement JWT based authoraization?
+-----------------------------------------------------------------------------------------------------------------
+Step 1 > A /authenticate API endpoint
+--Accept user ID and password
+--Returns JWT as response
+
+Step 2 > Intercept all incoming requests
+-- Extract JWT from the header
+--validate and set in execution context
+

@@ -1,0 +1,57 @@
+Spring security (https://github.com/koushikkothagal)
+Application Security Framework
+
+Login & logout Functionlity
+Allow/block access to URL's to logged in users
+llow/block acccess to URL's to logged in users and with certain roles
+
+What Spring securiy can do :
+1.User name / password Authentication
+2.SSO/LDAP
+3.App level Authorization
+4.Intra App Authorization like OAuth
+5.Microservices Security
+6.Method level security
+
+----------------------------------------------------------------
+5 key concepts in Spring Security
+
+1. Authentication : Who are u ? Id details :User Id and password. 
+Knowledge based authentication , Possesion based authentication like text msg, combination of both is multifactor authentication
+
+2.Authorization : Can this user do this ? Are they allowed to do this ? 
+User can do only the permitted operation.Role based
+
+fine grained permission Authorities 
+Group based permission roles
+3.Principal :Currently logged in user.Authenticated User.
+4. Granted Authorities
+5.Roles
+---------------------------------------------------------------------------------------------------------------
+Spring security default behaviour:
+1.Adds mandatatory authentication for URLs
+2.Add login form
+3.Handles login error
+4.creates a user and sets default password
+-
+-----------------------------------------------------------------------------------------------------------------------
+AuthenticaionManager-> authenticate()
+AuthenticaionManagerBuilder ->
+
+Filterss -> DelegatingFilterProxy
+AuthenticationProvider ->authenticate()->takes credentials as input & returns Principal (currently logged in user)
+and supports() methods
+There can be muultiple AuthenticationProviders like pwd /OAuth / LDAP
+ProviderManager implements AuthenticaionManager-> authenticate()
+UserDetails interface ->loaduserByUserName()
+
+--------------------------------------------------------------------------------------------------------------------
+LDAP :
+Authentication Filter intercepts authentication request->Creates authentication object with credentials and passes to 
+AuthenticaionManager->Then it finds the right providerusing supports method and then it using authenticate() method ->
+It then looks to appropriate user using UserDetailsService and returns the instance of UserDetails which authenticate method
+verifies and then authentication happens.->If its successful then Authentication Object is returned with Principal to Filter.
+If its not successful then Exception is thrown.
+Filter stores the Authentication Object is stored in Thread Local Object for Authorization.
+---------------------------------------------------------------------------------------------
+JDBC :
