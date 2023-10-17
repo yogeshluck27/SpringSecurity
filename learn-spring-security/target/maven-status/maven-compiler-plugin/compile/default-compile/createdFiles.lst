@@ -1,0 +1,6 @@
+com\in28minutes\learnspringsecurity\basic\BasicAuthSecurityConfiguration.class
+com\in28minutes\learnspringsecurity\resources\HelloWorldResource.class
+com\in28minutes\learnspringsecurity\resources\Todo.class
+com\in28minutes\learnspringsecurity\LearnSpringSecurityApplication.class
+com\in28minutes\learnspringsecurity\resources\TodoResource.class
+com\in28minutes\learnspringsecurity\resources\SpringSecurityPlayResource.class
